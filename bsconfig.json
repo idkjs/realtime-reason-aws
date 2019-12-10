@@ -16,8 +16,6 @@
   "reason": {
     "react-jsx": 3
   },
-  "ppx-flags": [
-    "@baransu/graphql_ppx_re"
-],
+  "ppx-flags": ["@baransu/graphql_ppx_re/ppx6"],
   "refmt": 3
 }

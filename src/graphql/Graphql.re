@@ -1,19 +1,4 @@
-/* const createMessage = `mutation createMessage($message: String!){
-       createMessage(input:{message:$message}) {
-       __typename
-       id
-       message
-       createdAt
-       }
-   }
-   `;
 
-   const onCreateMessage = `subscription onCreateMessage {
-       onCreateMessage {
-       __typename
-       message
-       }
-   }`; */
 module ListMessages = [%graphql
   {|
     query ListMessages(

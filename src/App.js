@@ -3,6 +3,7 @@ import Amplify from '@aws-amplify/core';
 import '@aws-amplify/pubsub';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { default as React, useEffect, useState } from 'react';
+import Re from './App.bs';
 import './App.css';
 import aws_exports from './aws-exports';
 import logo from './logo.svg';
@@ -26,7 +27,6 @@ const onCreateMessage = `subscription onCreateMessage {
 }`;
 
 function App() {
-	// Declare a new state variable, which we'll call "count"
 	const [
 		message,
 		setMessage
@@ -107,6 +107,7 @@ function App() {
 					</div>
 				</div> :
 				null}
+			<Re />
 		</div>
 	);
 }
