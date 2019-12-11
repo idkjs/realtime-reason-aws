@@ -2,20 +2,28 @@
   "name": "my-realtime-app",
   "version": "0.1.0",
   "private": true,
-  "keywords": ["appsync","aws","pubsub","graphql"],
+  "keywords": [
+    "appsync",
+    "aws",
+    "pubsub",
+    "graphql"
+  ],
   "dependencies": {
+    "@aws-amplify/api": "2.1.1",
+    "@aws-amplify/core": "2.2.0",
+    "@aws-amplify/pubsub": "2.1.1",
+    "bootstrap": "4.3.1",
+    "bs-observable": "https://github.com/idkjs/bs-observable.git",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-scripts": "3.3.0",
     "reason-react": "0.7.0",
-    "@aws-amplify/api": "2.1.1",
-    "@aws-amplify/core": "2.2.0",
-    "@aws-amplify/pubsub": "2.1.1",
-    "bootstrap": "4.3.1"
+    "zen-observable": "0.8.15"
   },
   "scripts": {
     "start": "react-scripts start",
-    "watch":"bsb -make-world -w",
+    "watch": "bsb -make-world -w",
+    "clean": "bsb -clean-world",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -37,6 +45,7 @@
   },
   "devDependencies": {
     "@baransu/graphql_ppx_re": "0.4.6",
+    "@types/zen-observable": "0.8.0",
     "bs-platform": "7.0.1"
   }
 }
