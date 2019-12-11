@@ -1,21 +1,27 @@
 {
   "name": "react-template",
   "sources": {
-    "dir" : "src",
-    "subdirs" : true
+    "dir": "src",
+    "subdirs": true
   },
-  "package-specs": [{
-    "module": "commonjs",
-    "in-source": true
-  }],
+  "package-specs": [
+    {
+      "module": "commonjs",
+      "in-source": true
+    }
+  ],
   "suffix": ".bs.js",
   "namespace": true,
   "bs-dependencies": [
-    "reason-react","bs-observable"
+    "reason-react",
+    "bs-observable",
+    "wonka"
   ],
   "reason": {
     "react-jsx": 3
   },
-  "ppx-flags": ["@baransu/graphql_ppx_re/ppx6"],
+  "ppx-flags": [
+    "@baransu/graphql_ppx_re/ppx6"
+  ],
   "refmt": 3
 }

@@ -9,6 +9,7 @@ let getInputValue = (e): string => ReactEvent.Form.target(e)##value;
 
 Amplify.configure(AwsExports.config);
 API.configure(AwsExports.config);
+PubSub.configurePubSub(AwsExports.config);
 
 open Types;
 
@@ -39,7 +40,41 @@ let make = () => {
          |> Js.Promise.resolve
        );
   };
-
+  // open PubSub;
+  let subscriptionObserver: PubSub.subscriptionObserver = {
+    next: event => {
+      Js.log2(
+        "Subscription: ",
+        Utils.jsonStringify(event.value.data, Js.Nullable.null, 2),
+      );
+      Js.log2("EVENT: ", Utils.jsonStringify(event, Js.Nullable.null, 2));
+      // setDisplay(true);
+      let message = event.value.data.message;
+      Js.log2("message", message);
+    },
+    closed: false,
+    error: errorValue => Js.log2("errorValue", errorValue),
+    complete: Js.log("complete"),
+  };
+  React.useEffect(() => {
+    let subRequest = Graphql.OnCreateMessage.make();
+    let graphqlOperation: Types.graphqlOperation = {
+      query: subRequest##query,
+      variables: subRequest##variables,
+    };
+    Js.log2("IN SUB USEFFECT: graphqlOperation", graphqlOperation);
+    let sub = API.subWithWonka(graphqlOperation);
+    // let subscription = sub |> Wonka.subscribe((. x) => print_int(x));
+    // sub.subcribe
+    let _ =
+      sub
+      |> Wonka.fromObservable
+      |> Wonka.subscribe((. x) => Js.log2("obs", x));
+    // obs();
+    // let observable = Wonka.fromArray([|1, 2, 3|]) |> Wonka.toObservable;
+    // |> PubSub.subscribe(subscriptionObserver) |. (x => Js.log2("subcribe result", x));
+    None;
+  });
   let handleChange = e => {
     let value = e |> getInputValue;
     setValue(_ => value);
