@@ -4,8 +4,10 @@ import '@aws-amplify/pubsub';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { default as React, useEffect, useState } from 'react';
 import Re from './App.bs';
+import AppWorkingSub from './demos/AppWorkingSub.bs';
 import './App.css';
 import aws_exports from './aws-exports';
+// import Demo from './demos/Demo.bs';
 import logo from './logo.svg';
 Amplify.configure(aws_exports);
 
@@ -107,7 +109,8 @@ function App() {
 					</div>
 				</div> :
 				null}
-			<Re />
+			{/* <Re /> */}
+			<AppWorkingSub />
 		</div>
 	);
 }

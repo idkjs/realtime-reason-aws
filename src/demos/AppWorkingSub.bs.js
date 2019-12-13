@@ -5,18 +5,17 @@ var Curry = require("bs-platform/lib/js/curry.js");
 var Wonka = require("wonka/src/wonka.js");
 var React = require("react");
 var Caml_option = require("bs-platform/lib/js/caml_option.js");
-var API$ReactTemplate = require("./aws/API.bs.js");
-var Types$ReactTemplate = require("./aws/Types.bs.js");
-var PubSub$ReactTemplate = require("./aws/PubSub.bs.js");
-var Amplify$ReactTemplate = require("./aws/Amplify.bs.js");
-var Graphql$ReactTemplate = require("./graphql/Graphql.bs.js");
-var AwsExports$ReactTemplate = require("./aws/AwsExports.bs.js");
+var API$ReactTemplate = require("../aws/API.bs.js");
+var PubSub$ReactTemplate = require("../aws/PubSub.bs.js");
+var Amplify$ReactTemplate = require("../aws/Amplify.bs.js");
+var Graphql$ReactTemplate = require("../graphql/Graphql.bs.js");
+var AwsExports$ReactTemplate = require("../aws/AwsExports.bs.js");
 
 function getInputValue(e) {
   return e.target.value;
 }
 
-((require('./App.css')));
+((require('../App.css')));
 
 ((require('bootstrap/dist/css/bootstrap.min.css')));
 
@@ -28,15 +27,11 @@ API$ReactTemplate.configure(AwsExports$ReactTemplate.config);
 
 PubSub$ReactTemplate.configurePubSub(AwsExports$ReactTemplate.config);
 
-function App(Props) {
+function AppWorkingSub(Props) {
   var match = React.useState((function () {
-          return ;
-        }));
-  var message = match[0];
-  var match$1 = React.useState((function () {
           return "";
         }));
-  var setValue = match$1[1];
+  var setValue = match[1];
   var handleSubmit = function ($$event) {
     var time = Date.now();
     var value = "RE: " + new Date(time).toLocaleString();
@@ -62,6 +57,7 @@ function App(Props) {
                   return Promise.resolve((console.log("reason_broadcaster_mutation", response.data), /* () */0));
                 }));
   };
+  console.log("complete");
   React.useEffect((function () {
           var subRequest = Graphql$ReactTemplate.OnCreateMessage.make(/* () */0);
           var graphqlOperation_query = subRequest.query;
@@ -70,19 +66,11 @@ function App(Props) {
             query: graphqlOperation_query,
             variables: graphqlOperation_variables
           };
-          console.log("IN SUB USEFFECT: graphqlOperation", graphqlOperation);
-          Types$ReactTemplate.OnCreateMessage.make(/* () */0);
-          var graphqlSubUrql = API$ReactTemplate.graphqlSubUrql(graphqlOperation);
-          Wonka.subscribe((function (param) {
-                    var response = param.response;
-                    if (typeof response === "number" || response.tag) {
-                      console.log("NotFound");
-                      return /* () */0;
-                    } else {
-                      console.log("Already processed block: %s", response[0]);
-                      return /* () */0;
-                    }
-                  }))(Wonka.fromObservable(graphqlSubUrql));
+          var sub = API$ReactTemplate.subWithWonka(graphqlOperation);
+          Wonka.subscribe((function (x) {
+                    console.log("obs", x);
+                    return /* () */0;
+                  }))(Wonka.fromObservable(sub));
           return ;
         }));
   return React.createElement("div", {
@@ -101,7 +89,7 @@ function App(Props) {
                     }, React.createElement("input", {
                           className: "form-control form-control-lg",
                           type: "text",
-                          value: match$1[0],
+                          value: match[0],
                           onChange: (function (e) {
                               var e$1 = e;
                               var value = e$1.target.value;
@@ -114,18 +102,12 @@ function App(Props) {
                           id: "button",
                           type: "submit",
                           value: "Submit"
-                        }))), React.createElement("br", undefined), message !== undefined ? React.createElement("div", {
-                    className: "container"
-                  }, React.createElement("div", {
-                        className: "card bg-success"
-                      }, React.createElement("h3", {
-                            className: "card-text text-white p-2"
-                          }, message))) : null);
+                        }))), React.createElement("br", undefined));
 }
 
-var make = App;
+var make = AppWorkingSub;
 
-var $$default = App;
+var $$default = AppWorkingSub;
 
 exports.getInputValue = getInputValue;
 exports.make = make;

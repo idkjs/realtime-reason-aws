@@ -20,80 +20,129 @@ type subscriptionObserver = {
   error: errorValue => unit,
   complete: unit,
 };
-type objectWithCallback = {
-  // y: option({. z: option(unit => int)}),
-  // x: option(unit => unit),
-  // w: option(unit => int),
+// type objectWithCallback = {
+//   closed: option(bool),
+//   next: option(event => unit),
+//   error: option(errorValue => unit),
+//   complete: option(unit=>unit),
+// };
+type objectWithCallback('event) = {
   closed: option(bool),
   next: option(event => unit),
   error: option(errorValue => unit),
-  complete: option(unit=>unit),
+  complete: option(unit => unit),
 };
-let objectWithCallback: objectWithCallback = {
-  next: Some(event => Js.log(event)),
+type observerLike('value) = {
+  next: 'value => unit,
+  error: Js.Exn.t => unit,
+  complete: unit => unit,
+};
+
+type observableLike('value) = {
+  subscribe:
+    observerLike('value) => {. [@bs.meth] "unsubscribe": unit => unit},
+};
+type eventCallback = {
+  closed: option(bool),
+  next: option(event => unit),
+  error: option(errorValue => unit),
+  complete: option(unit => unit),
+};
+let objectWithCallback: objectWithCallback('event) = {
+  next: Some(event => Js.log2("event", event)),
   error: Some(errorValue => Js.log(errorValue)),
   closed: Some(true),
-  complete: Some(_=>Js.log("complete"))
+  complete: Some(_ => Js.log("complete")),
 };
 
 [@bs.module "@aws-amplify/pubsub"] external pubsub: t = "default";
-[@bs.send]
-external _subscribe:
-  (t, objectWithCallback) => Observable.t(objectWithCallback) =
-  "subscribe";
-[@bs.send]
-external _graphqlSub:
-  (t, Types.graphqlOperation) => Observable.t(objectWithCallback) =
-  "graphql";
+
 [@bs.send]
 external _graphqlSubWonka:
   (t, Types.graphqlOperation) => Wonka.observableT('a) =
+  "graphql";
+[@bs.send]
+external _graphqlSubCb:
+  (t, Types.graphqlOperation) => Wonka.observableT(subscriptionObserver) =
+  "graphql";
+[@bs.send]
+external _graphqlSubUrql:
+  (t, Types.graphqlOperation) =>
+  Wonka.observableT(Types.clientResponse('response)) =
   "graphql";
 let mutate: Types.operation =
   graphqlOperation => {
     _graphql(api, graphqlOperation);
   };
-let sub =
-  graphqlOperation => {
-    _graphqlSub(api, graphqlOperation);
-  };
-let subWithWonka =
-  graphqlOperation => {
-    _graphqlSubWonka(api, graphqlOperation);
-  };
-type subOperation = Types.operation => Observable.t(subscriptionObserver);
-type subscription = Types.operation => subOperation;
-// let subscription: subscription =
-//   (graphqlOperation: Types.graphqlOperation, subscriptionObserver) => {
-//     mutate(graphqlOperation)
-//     |> Js.Promise.resolve(res)
-//     |> _subscribe(
-//          pubsub,
-//          subscriptionObserver /*   Observable.make((observer: SubscriptionObserver.t(event)) => */ /*   _graphql(api, graphqlOperation)*/,
-//        ) /* let subscription = graphqlOperation => */ /* }*/ /* 	complete: (unit*/;
-//   } /* 	error: errorValue => unit*/;
+let objectWithCallback: objectWithCallback('event) = {
+  next: Some(event => Js.log2("event", event)),
+  error: Some(errorValue => Js.log(errorValue)),
+  closed: Some(true),
+  complete: Some(_ => Js.log("complete")),
+};
+let graphqlSubCb = graphqlOperation => {
+  _graphqlSubCb(api, graphqlOperation);
+};
+let graphqlSubUrql = graphqlOperation => {
+  _graphqlSubUrql(api, graphqlOperation);
+};
+let subWithWonka = graphqlOperation => {
+  _graphqlSubWonka(api, graphqlOperation);
+};
 
-// type subscriptionOptions = {
-// };
-// [@bs.send.pipe: t]
-// external subscribe: Types.graphqlOperation => Js.Promise.t(Types.executionResult) = "subscribe";
+let clientResponseToReason =
+    (~parse: Js.Json.t => 'response, ~result: Types.operationResult)
+    : Types.clientResponse('response) => {
+  let data = result.data->Js.Nullable.toOption->Belt.Option.map(parse);
+  let error = result.error->Js.Nullable.toOption;
 
-// Observable.make((observer: SubscriptionObserver.t(int)) => {
-//   observer->(SubscriptionObserver.next(10));
-//   ignore;
-// })
-// ->Observable.(subscribe(x => Js.log(x)))
-// ->ignore;
-// open Observable;
-// type pubsub;
-// [@bs.module "@aws-amplify/pubsub"] external pubsub: pubsub = "default";
-// [@bs.send]
-// external configurePubSub: (pubsub, AwsExports.t) => unit = "configure";
-// let configurePubSub = config => configurePubSub(pubsub, config);
-// [@bs.send.pipe: pubsub]
-// external subscribe:
-//   (pubsub, Types.graphqlOperation) => Observable.t(Types.executionResult) =
-//   "subscribe";
-// type subscriptionObserver = {
-// 	closed: bool,
-// 	next: value('a) => unit,
+  let response =
+    switch (data, error) {
+    | (Some(data), _) => Types.Data(data)
+    | (None, Some(error)) => Error(error)
+    | (None, None) => NotFound
+    };
+
+  {data, error, response};
+};
+[@bs.send]
+external _graphql:
+  (~client: t, ~query: Types.graphqlOperation, unit) =>
+  Wonka.Types.sourceT(Types.operationResult) =
+  "graphql";
+let executeQuery =
+    (~request: Types.request('response), ())
+    : Wonka.Types.sourceT(Types.clientResponse('response)) => {
+  let req: Types.graphqlOperation = {
+    query: request##query,
+    variables: Some(request##variables),
+  };
+  // let req =
+  //   Types.createRequest(
+  //     ~query=request##query,
+  //     ~variables=request##variables,
+  //     (),
+  //   );
+  let parse = request##parse;
+
+  _graphql(~client=api, ~query=req, ())
+  |> Wonka.map((. result) => clientResponseToReason(~parse, ~result));
+};
+
+[@bs.send]
+external executeSubscriptionJs:
+  (t, Types.graphqlOperation) => Wonka.Types.sourceT(Types.operationResult) =
+  "graphql";
+
+let executeSubscription =
+    (~request: Types.request('response))
+    : Wonka.Types.sourceT(Types.clientResponse('response)) => {
+  let req: Types.graphqlOperation = {
+    query: request##query,
+    variables: Some(request##variables),
+  };
+  let parse = request##parse;
+
+  executeSubscriptionJs(api, req)
+  |> Wonka.map((. result) => clientResponseToReason(~parse, ~result));
+};
