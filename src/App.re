@@ -11,7 +11,7 @@ let getInputValue = (e): string => ReactEvent.Form.target(e)##value;
 
 Amplify.configure(AwsExports.config);
 API.configure(AwsExports.config);
-PubSub.configurePubSub(AwsExports.config);
+// PubSub.configurePubSub(AwsExports.config);
 
 open Types;
 
@@ -34,7 +34,6 @@ let make = () => {
       query: mutationRequest##query,
       variables: Some(mutationRequest##variables),
     };
-    ();
     API.mutate(graphqlOperation)
     |> Js.Promise.then_(response =>
          {
@@ -104,24 +103,20 @@ let make = () => {
     let _ =
       graphqlSubUrql
       |> Wonka.fromObservable
-      |> Wonka.subscribe((. {Types.response}) => {
-        switch (response) {
-        | Data(data) =>
-          let stateHash = data;
-          Js.log2("Already processed block: %s", stateHash);
-        // if (BlockSet.has(processedBlocks, stateHash)) {
-        //   Js.log2("Already processed block: %s", stateHash);
-        //   false;
-        // } else {
-        //   BlockSet.add(processedBlocks, stateHash);
-        //   true;
-        // };
-        | Error(_)
-        | NotFound => Js.log("NotFound")
-        };
-          //  Js.log2(
-          //    "testQuery",
-          //    data,
+      |> Wonka.subscribe((. response) => {
+           Js.log2(
+             "response",
+             response,
+             //  switch (response) {
+             //  | Data(data) =>
+             //    let stateHash = data;
+             //    Js.log2("Already processed block", stateHash);
+             //  | Error(e) => Js.log2("error", e)
+             //  | NotFound => Js.log("NotFound")
+             //  };
+             //  Js.log2(
+             //    "testQuery",
+             //    data,
              //  switch (data.response) {
              //  | Data(d) =>
              //    switch (Js.Json.stringifyAny(d)) {
@@ -135,7 +130,8 @@ let make = () => {
              //    }
              //  | _ => ()
              //  }
-          //  )
+             //  )
+           )
          });
     // |> Wonka.subscribe((. event) => {
     //      Js.log2("graphqlSubUrql_data", event);

@@ -2,21 +2,26 @@ type graphqlOperation = {
   query: string,
   variables: option(Js.Json.t),
 };
+type graphqlRequest = {
+  key: int,
+  query: string,
+  variables: option(Js.Json.t),
+};
 // type graphqlOperation = {
- //   query: string,
- //   variables: Js.Json.t,
- // }
+//   query: string,
+//   variables: Js.Json.t,
+// }
 // [@bs.obj]
 // external createRequest:
 //   (~query: string, ~variables: Js.Json.t=?, unit) => graphqlOperation =
 //   "";
 /* The signature of the Js.t created by calling `.make()` on a `graphql_ppx` module. */
-// type request('response) = {
-//   parse: Js.Json.t => 'response,
-//   query: string,
-//   variables: Js.Json.t,
-// };
 type request('response) = {
+  parse: Js.Json.t => 'response,
+  query: string,
+  variables: Js.Json.t,
+};
+type requestJs('response) = {
   .
   "parse": Js.Json.t => 'response,
   "query": string,
@@ -43,12 +48,12 @@ module OperationType: {
 };
 type operationResult = {
   operation: OperationType.t,
-  data: Js.Nullable.t(Js.Json.t),
-  error: Js.Nullable.t(GraphqlError.t),
+  data: option(Js.Json.t),
+  error: option(GraphqlError.t),
 };
 
-
 type response('response) =
+  | Fetching
   | Data('response)
   | Error(GraphqlError.t)
   | NotFound;
@@ -57,6 +62,20 @@ type clientResponse('response) = {
   data: option('response),
   error: option(GraphqlError.t),
   response: response('response),
+};
+type hookResponse('ret) = {
+  fetching: bool,
+  data: option('ret),
+  error: option(GraphqlError.t),
+  response: response('ret),
+};
+[@bs.deriving abstract]
+type jsResponse('response) = {
+  fetching: bool,
+  [@bs.as "data"]
+  jsData: Js.Nullable.t('response),
+  [@bs.optional] [@bs.as "error"]
+  jsError: GraphqlError.errorJs,
 };
 // type clientResponse('response) =
 //   ApiClient.ClientTypes.clientResponse('response) = {
@@ -88,18 +107,8 @@ module OnCreateMessage = [%graphql
 // }
 // and value = {data: onCreateMessage};
 // type errorValue = {message: string};
-// type subscriptionObserver = {
-//   closed: bool,
-//   next: event => unit,
-//   error: errorValue => unit,
-//   complete: unit,
-// };
 type operation = graphqlOperation => Js.Promise.t(executionResult);
 
-// type subscribe = unit => PubSub.stream;
-// type subscription = {state: subscribe};
-// type subscription = {. "state": {. "subscribe": unit => PubSub.stream}};
-// and subscribe = unit => PubSub.stream;
 type message = {
   id: option(string),
   message: string,

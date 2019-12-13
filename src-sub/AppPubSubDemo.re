@@ -1,3 +1,4 @@
+
 [@bs.val]
 external jsonStringify: ('a, Js.Nullable.t(unit), int) => string =
   "JSON.stringify";
@@ -9,9 +10,9 @@ let getInputValue = (e): string => ReactEvent.Form.target(e)##value;
 
 Amplify.configure(AwsExports.config);
 API.configure(AwsExports.config);
-PubSub.configurePubSub(AwsExports.config);
+// PubSub.configurePubSub(AwsExports.config);
 
-open Types;
+// open Types;
 
 [@react.component]
 let make = () => {
@@ -19,6 +20,7 @@ let make = () => {
   let (value, setValue) = React.useState(() => "");
 
   let handleSubmit = event => {
+    open Types;
     let time = Js.Date.now();
     let value = "RE: " ++ time->Js.Date.fromFloat->Js.Date.toLocaleString;
     setValue(_ => value);
@@ -40,38 +42,40 @@ let make = () => {
          |> Js.Promise.resolve
        );
   };
-  // open PubSub;
-  let subscriptionObserver: PubSub.subscriptionObserver = {
-    next: event => {
-      Js.log2(
-        "Subscription: ",
-        Utils.jsonStringify(event.value.data, Js.Nullable.null, 2),
-      );
-      Js.log2("EVENT: ", Utils.jsonStringify(event, Js.Nullable.null, 2));
-      // setDisplay(true);
-      let message = event.value.data.message;
-      Js.log2("message", message);
-    },
-    closed: false,
-    error: errorValue => Js.log2("errorValue", errorValue),
-    complete: Js.log("complete"),
-  };
+  // let subscriptionObserver: API.observerLike('event) = {
+  //   next: event => {
+  //     Js.log2(
+  //       "Subscription: ",
+  //       Utils.jsonStringify(event.value.data, Js.Nullable.null, 2),
+  //     );
+  //     Js.log2("EVENT: ", Utils.jsonStringify(event, Js.Nullable.null, 2));
+  //     // setDisplay(true);
+  //     let message = event.value.data.message;
+  //     Js.log2("message", message);
+  //   },
+  //   error: errorValue => Js.log2("errorValue", errorValue),
+  //   complete: () => Js.log("complete"),
+  // };
   React.useEffect(() => {
     let subRequest = Graphql.OnCreateMessage.make();
-    let graphqlOperation: Types.graphqlOperation = {
-      query: subRequest##query,
-      variables: Some(subRequest##variables),
-    };
-    let sub = API.subWithWonka(graphqlOperation);
-    // let subscription = sub |> Wonka.subscribe((. x) => print_int(x));
-    // sub.subcribe
+
+    // let sub = API.subWithWonka(graphqlOperation);
+    let executeSubscription = () => PubSub.executeSubscription(~request=subRequest);
     let _ =
-      sub
-      |> Wonka.fromObservable
-      |> Wonka.subscribe((. x) => Js.log2("obs", x));
-    // obs();
-    // let observable = Wonka.fromArray([|1, 2, 3|]) |> Wonka.toObservable;
-    // |> PubSub.subscribe(subscriptionObserver) |. (x => Js.log2("subcribe result", x));
+      executeSubscription()
+      // |> Wonka.fromObservable
+      |> Wonka.subscribe((. response) => {
+        // let data = response##data;
+        Js.log2("Already processed executeSubscription", response);
+          //  switch (response) {
+          //  | Data(data) =>
+          //    //  let stateHash = data;
+          //    Js.log2("Already processed executeSubscription: %s", data)
+          //  | Error(e) => Js.log2("error", e)
+          //  | NotFound => Js.log("NotFound")
+          //  }
+         });
+
     None;
   });
   let handleChange = e => {

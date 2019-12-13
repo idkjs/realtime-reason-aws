@@ -25,9 +25,7 @@ Amplify$ReactTemplate.configure(AwsExports$ReactTemplate.config);
 
 API$ReactTemplate.configure(AwsExports$ReactTemplate.config);
 
-PubSub$ReactTemplate.configurePubSub(AwsExports$ReactTemplate.config);
-
-function AppWorkingSub(Props) {
+function AppPubSubDemo(Props) {
   var match = React.useState((function () {
           return "";
         }));
@@ -57,20 +55,12 @@ function AppWorkingSub(Props) {
                   return Promise.resolve((console.log("reason_broadcaster_mutation", response.data), /* () */0));
                 }));
   };
-  console.log("complete");
   React.useEffect((function () {
           var subRequest = Graphql$ReactTemplate.OnCreateMessage.make(/* () */0);
-          var graphqlOperation_query = subRequest.query;
-          var graphqlOperation_variables = Caml_option.some(subRequest.variables);
-          var graphqlOperation = {
-            query: graphqlOperation_query,
-            variables: graphqlOperation_variables
-          };
-          var sub = API$ReactTemplate.subWithWonka(graphqlOperation);
-          Wonka.subscribe((function (x) {
-                    console.log("obs", x);
+          Wonka.subscribe((function (response) {
+                    console.log("Already processed executeSubscription", response);
                     return /* () */0;
-                  }))(Wonka.fromObservable(sub));
+                  }))(PubSub$ReactTemplate.executeSubscription(subRequest));
           return ;
         }));
   return React.createElement("div", {
@@ -105,9 +95,9 @@ function AppWorkingSub(Props) {
                         }))), React.createElement("br", undefined));
 }
 
-var make = AppWorkingSub;
+var make = AppPubSubDemo;
 
-var $$default = AppWorkingSub;
+var $$default = AppPubSubDemo;
 
 exports.getInputValue = getInputValue;
 exports.make = make;

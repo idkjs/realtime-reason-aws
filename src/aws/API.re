@@ -3,10 +3,6 @@ type t;
 [@bs.send] external configure: (t, AwsExports.t) => unit = "configure";
 let configure = config => configure(api, config);
 
-[@bs.send]
-external _graphql:
-  (t, Types.graphqlOperation) => Js.Promise.t(Types.executionResult) =
-  "graphql";
 type pubsub;
 type event = {
   provider: Js.Json.t,
@@ -33,8 +29,8 @@ type objectWithCallback('event) = {
   complete: option(unit => unit),
 };
 type observerLike('value) = {
-  next: 'value => unit,
-  error: Js.Exn.t => unit,
+  next: event => unit,
+  error: errorValue => unit,
   complete: unit => unit,
 };
 
@@ -55,11 +51,21 @@ let objectWithCallback: objectWithCallback('event) = {
   complete: Some(_ => Js.log("complete")),
 };
 
-[@bs.module "@aws-amplify/pubsub"] external pubsub: t = "default";
-
+// let objectWithCallback: objectWithCallback('event) = {
+//   next: Some(event => Js.log2("event", event)),
+//   error: Some(errorValue => Js.log(errorValue)),
+//   closed: Some(true),
+//   complete: Some(_ => Js.log("complete")),
+// };
+// don't have to bind to this? it happens on the aws-amplify side i think.
+// [@bs.module "@aws-amplify/pubsub"] external pubsub: t = "default";
+[@bs.send]
+external _graphql:
+  (t, Types.graphqlOperation) => Js.Promise.t(Types.executionResult) =
+  "graphql";
 [@bs.send]
 external _graphqlSubWonka:
-  (t, Types.graphqlOperation) => Wonka.observableT('a) =
+  (t, Types.graphqlOperation) => Wonka.observableT(Types.clientResponse('response)) =
   "graphql";
 [@bs.send]
 external _graphqlSubCb:
@@ -74,12 +80,7 @@ let mutate: Types.operation =
   graphqlOperation => {
     _graphql(api, graphqlOperation);
   };
-let objectWithCallback: objectWithCallback('event) = {
-  next: Some(event => Js.log2("event", event)),
-  error: Some(errorValue => Js.log(errorValue)),
-  closed: Some(true),
-  complete: Some(_ => Js.log("complete")),
-};
+
 let graphqlSubCb = graphqlOperation => {
   _graphqlSubCb(api, graphqlOperation);
 };
@@ -93,8 +94,8 @@ let subWithWonka = graphqlOperation => {
 let clientResponseToReason =
     (~parse: Js.Json.t => 'response, ~result: Types.operationResult)
     : Types.clientResponse('response) => {
-  let data = result.data->Js.Nullable.toOption->Belt.Option.map(parse);
-  let error = result.error->Js.Nullable.toOption;
+  let data = result.data->Belt.Option.map(parse);
+  let error = result.error;
 
   let response =
     switch (data, error) {
@@ -114,8 +115,8 @@ let executeQuery =
     (~request: Types.request('response), ())
     : Wonka.Types.sourceT(Types.clientResponse('response)) => {
   let req: Types.graphqlOperation = {
-    query: request##query,
-    variables: Some(request##variables),
+    query: request.query,
+    variables: Some(request.variables),
   };
   // let req =
   //   Types.createRequest(
@@ -123,7 +124,7 @@ let executeQuery =
   //     ~variables=request##variables,
   //     (),
   //   );
-  let parse = request##parse;
+  let parse = request.parse;
 
   _graphql(~client=api, ~query=req, ())
   |> Wonka.map((. result) => clientResponseToReason(~parse, ~result));
@@ -138,10 +139,10 @@ let executeSubscription =
     (~request: Types.request('response))
     : Wonka.Types.sourceT(Types.clientResponse('response)) => {
   let req: Types.graphqlOperation = {
-    query: request##query,
-    variables: Some(request##variables),
+    query: request.query,
+    variables: Some(request.variables),
   };
-  let parse = request##parse;
+  let parse = request.parse;
 
   executeSubscriptionJs(api, req)
   |> Wonka.map((. result) => clientResponseToReason(~parse, ~result));

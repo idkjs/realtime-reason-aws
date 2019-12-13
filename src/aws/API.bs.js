@@ -12,10 +12,6 @@ function configure(config) {
   return /* () */0;
 }
 
-function mutate(graphqlOperation) {
-  return Api.default.graphql(graphqlOperation);
-}
-
 var objectWithCallback_closed = true;
 
 var objectWithCallback_next = (function ($$event) {
@@ -40,6 +36,10 @@ var objectWithCallback = {
   complete: objectWithCallback_complete
 };
 
+function mutate(graphqlOperation) {
+  return Api.default.graphql(graphqlOperation);
+}
+
 function graphqlSubCb(graphqlOperation) {
   return Api.default.graphql(graphqlOperation);
 }
@@ -53,14 +53,14 @@ function subWithWonka(graphqlOperation) {
 }
 
 function clientResponseToReason(parse, result) {
-  var data = Belt_Option.map(Caml_option.nullable_to_opt(result.data), parse);
+  var data = Belt_Option.map(result.data, parse);
   var error = result.error;
   var response = data !== undefined ? /* Data */Block.__(0, [Caml_option.valFromOption(data)]) : (
-      (error == null) ? /* NotFound */0 : /* Error */Block.__(1, [error])
+      error !== undefined ? /* Error */Block.__(1, [error]) : /* NotFound */1
     );
   return {
           data: data,
-          error: (error == null) ? undefined : Caml_option.some(error),
+          error: error,
           response: response
         };
 }
@@ -92,8 +92,8 @@ function executeSubscription(request) {
 }
 
 exports.configure = configure;
-exports.mutate = mutate;
 exports.objectWithCallback = objectWithCallback;
+exports.mutate = mutate;
 exports.graphqlSubCb = graphqlSubCb;
 exports.graphqlSubUrql = graphqlSubUrql;
 exports.subWithWonka = subWithWonka;

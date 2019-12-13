@@ -7,7 +7,6 @@ var React = require("react");
 var Caml_option = require("bs-platform/lib/js/caml_option.js");
 var API$ReactTemplate = require("./aws/API.bs.js");
 var Types$ReactTemplate = require("./aws/Types.bs.js");
-var PubSub$ReactTemplate = require("./aws/PubSub.bs.js");
 var Amplify$ReactTemplate = require("./aws/Amplify.bs.js");
 var Graphql$ReactTemplate = require("./graphql/Graphql.bs.js");
 var AwsExports$ReactTemplate = require("./aws/AwsExports.bs.js");
@@ -25,8 +24,6 @@ function getInputValue(e) {
 Amplify$ReactTemplate.configure(AwsExports$ReactTemplate.config);
 
 API$ReactTemplate.configure(AwsExports$ReactTemplate.config);
-
-PubSub$ReactTemplate.configurePubSub(AwsExports$ReactTemplate.config);
 
 function App(Props) {
   var match = React.useState((function () {
@@ -73,15 +70,9 @@ function App(Props) {
           console.log("IN SUB USEFFECT: graphqlOperation", graphqlOperation);
           Types$ReactTemplate.OnCreateMessage.make(/* () */0);
           var graphqlSubUrql = API$ReactTemplate.graphqlSubUrql(graphqlOperation);
-          Wonka.subscribe((function (param) {
-                    var response = param.response;
-                    if (typeof response === "number" || response.tag) {
-                      console.log("NotFound");
-                      return /* () */0;
-                    } else {
-                      console.log("Already processed block: %s", response[0]);
-                      return /* () */0;
-                    }
+          Wonka.subscribe((function (response) {
+                    console.log("response", response);
+                    return /* () */0;
                   }))(Wonka.fromObservable(graphqlSubUrql));
           return ;
         }));
