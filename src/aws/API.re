@@ -68,9 +68,6 @@ let listener: Types.observerLike('event) = {
   error: errorValue => Js.log(errorValue),
   complete: _ => Js.log("COMPLETE"),
 };
-// let observableLike:
-//   Types.observerLike('event) => Types.observableLike('event) =
-//   observerLikeEvent => subscribe(observerLikeEvent);
 
 // let objectWithCallback: objectWithCallback('event) = {
 //   next: Some(event => Js.log2("event", event)),

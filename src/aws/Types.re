@@ -49,45 +49,20 @@ module OperationType: {
 type operationResult = {
   operation: OperationType.t,
   data: option(Js.Json.t),
-  error: option(GraphqlError.t),
+  error: option(string),
 };
 
 type response('response) =
   | Fetching
   | Data('response)
-  | Error(GraphqlError.t)
+  | Error(string)
   | NotFound;
 
 type clientResponse('response) = {
   data: option('response),
-  error: option(GraphqlError.t),
+  error: option(string),
   response: response('response),
 };
-type hookResponse('ret) = {
-  fetching: bool,
-  data: option('ret),
-  error: option(GraphqlError.t),
-  response: response('ret),
-};
-[@bs.deriving abstract]
-type jsResponse('response) = {
-  fetching: bool,
-  [@bs.as "data"]
-  jsData: Js.Nullable.t('response),
-  [@bs.optional] [@bs.as "error"]
-  jsError: GraphqlError.errorJs,
-};
-// type clientResponse('response) =
-//   ApiClient.ClientTypes.clientResponse('response) = {
-//     data: option('response),
-//     error: option(GraphqlError.t),
-//     response: ApiClient.ClientTypes.response('response),
-//   };
-// type executionResult = {
-//   errors: Js.Nullable.t(array(string)),
-//   data: option(Js.Json.t),
-// };
-// type operation = graphqlOperation => Js.Promise.t(executionResult);
 
 type onCreateMessage = {
   __typename: string,
@@ -120,7 +95,7 @@ type observableLike('value) = {
   subscribe:
     observerLike('value) => {. [@bs.meth] "unsubscribe": unit => unit},
 };
-type subscription = graphqlOperation => Wonka.observableT(observableLike(observerLike(value)));
+// type subscription = graphqlOperation => Wonka.observableT(observableLike(observerLike(value)));
 
 type message = {
   id: option(string),

@@ -18,8 +18,6 @@ function getInputValue(e) {
 
 ((require('bootstrap/dist/css/bootstrap.min.css')));
 
-((require("@aws-amplify/pubsub")));
-
 Amplify$ReactTemplate.configure(AwsExports$ReactTemplate.config);
 
 API$ReactTemplate.configure(AwsExports$ReactTemplate.config);
@@ -47,7 +45,6 @@ function App(Props) {
       message: value,
       createdAt: undefined
     };
-    console.log("Message: ", message);
     var mutationRequest = Graphql$ReactTemplate.CreateMessage.make(message, /* () */0);
     var graphqlOperation_query = mutationRequest.query;
     var graphqlOperation_variables = Caml_option.some(mutationRequest.variables);
@@ -59,13 +56,11 @@ function App(Props) {
                   return Promise.resolve((console.log("reason_broadcaster_mutation", response), /* () */0));
                 }));
   };
-  var handleEvent = function ($$event) {
-    var eventJstMsg = $$event.value.data.onCreateMessage.message;
-    Curry._1(setMessage, (function (param) {
-            return eventJstMsg;
-          }));
-    console.log("event->eventJstMsg", eventJstMsg);
-    return /* () */0;
+  var handleSubscriptionEvent = function ($$event) {
+    var message = $$event.value.data.onCreateMessage.message;
+    return Curry._1(setMessage, (function (param) {
+                  return message;
+                }));
   };
   React.useEffect((function () {
           var subRequest = Graphql$ReactTemplate.OnCreateMessage.make(/* () */0);
@@ -77,7 +72,7 @@ function App(Props) {
           };
           var wonkaObservableT = API$ReactTemplate.subscriptionSink(graphqlOperation);
           var wonkaSubscriptionT = Wonka.subscribe((function ($$event) {
-                    handleEvent($$event);
+                    handleSubscriptionEvent($$event);
                     console.log("wonkaSubscriptionT_event", $$event);
                     return /* () */0;
                   }))(Wonka.fromObservable(wonkaObservableT));
@@ -91,7 +86,15 @@ function App(Props) {
                   className: "jumbotron jumbotron-fluid p-0"
                 }, React.createElement("h2", {
                       className: "center"
-                    }, "Reason Broadcaster")), React.createElement("br", undefined), React.createElement("form", {
+                    }, "Reason Broadcaster"), message !== undefined ? React.createElement("div", {
+                        className: "container"
+                      }, React.createElement("div", {
+                            className: "card bg-success"
+                          }, React.createElement("h2", {
+                                className: "center"
+                              }, "Reason WSS Sub Response"), React.createElement("h3", {
+                                className: "card-text text-white p-2"
+                              }, message))) : null), React.createElement("br", undefined), React.createElement("form", {
                   onSubmit: (function (e) {
                       handleSubmit(e);
                       return /* () */0;
@@ -114,13 +117,7 @@ function App(Props) {
                           id: "button",
                           type: "submit",
                           value: "Submit"
-                        }))), React.createElement("br", undefined), message !== undefined ? React.createElement("div", {
-                    className: "container"
-                  }, React.createElement("div", {
-                        className: "card bg-success"
-                      }, React.createElement("h3", {
-                            className: "card-text text-white p-2"
-                          }, message))) : null);
+                        }))), React.createElement("br", undefined));
 }
 
 var make = App;
