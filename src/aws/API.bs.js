@@ -52,6 +52,10 @@ function subWithWonka(graphqlOperation) {
   return Api.default.graphql(graphqlOperation);
 }
 
+function subWithWonka2(graphqlOperation) {
+  return Api.default.graphql(graphqlOperation);
+}
+
 function clientResponseToReason(parse, result) {
   var data = Belt_Option.map(result.data, parse);
   var error = result.error;
@@ -97,6 +101,7 @@ exports.mutate = mutate;
 exports.graphqlSubCb = graphqlSubCb;
 exports.graphqlSubUrql = graphqlSubUrql;
 exports.subWithWonka = subWithWonka;
+exports.subWithWonka2 = subWithWonka2;
 exports.clientResponseToReason = clientResponseToReason;
 exports.executeQuery = executeQuery;
 exports.executeSubscription = executeSubscription;

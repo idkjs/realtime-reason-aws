@@ -6,7 +6,6 @@ var Wonka = require("wonka/src/wonka.js");
 var React = require("react");
 var Caml_option = require("bs-platform/lib/js/caml_option.js");
 var API$ReactTemplate = require("./aws/API.bs.js");
-var Types$ReactTemplate = require("./aws/Types.bs.js");
 var Amplify$ReactTemplate = require("./aws/Amplify.bs.js");
 var Graphql$ReactTemplate = require("./graphql/Graphql.bs.js");
 var AwsExports$ReactTemplate = require("./aws/AwsExports.bs.js");
@@ -67,15 +66,13 @@ function App(Props) {
             query: graphqlOperation_query,
             variables: graphqlOperation_variables
           };
-          console.log("IN SUB USEFFECT: graphqlOperation", graphqlOperation);
-          Types$ReactTemplate.OnCreateMessage.make(/* () */0);
-          var graphqlSubUrql = API$ReactTemplate.graphqlSubUrql(graphqlOperation);
-          Wonka.subscribe((function (response) {
-                    console.log("response", response);
+          var sub = API$ReactTemplate.subWithWonka2(graphqlOperation);
+          Wonka.subscribe((function (x) {
+                    console.log("subWithWonka2_RAQ", x);
                     return /* () */0;
-                  }))(Wonka.fromObservable(graphqlSubUrql));
+                  }))(Wonka.fromObservable(sub));
           return ;
-        }));
+        }), ([]));
   return React.createElement("div", {
               className: "container"
             }, React.createElement("div", {

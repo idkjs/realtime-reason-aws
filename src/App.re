@@ -43,106 +43,102 @@ let make = () => {
        );
   };
 
-  React.useEffect(() => {
-    let eventJs = event => {
-      Js.log2("in EventJS", event);
-      {j|{
-     			next: (event) => {
-     				if (event) {
-     					console.log('Subscription_REASON: ' + JSON.stringify(event.value.data, null, 2));
-     					console.log('EVENT_REASON: ' + JSON.stringify(event, null, 2));
-     					setDisplay(true);
-     					let message = event.value.data.onCreateMessage.message;
-     					setMessage(message);
-     				}
-     			}
-     		}|j};
-    };
+  // React.useEffect(() => {
+  //   let eventJs = event => {
+  //     Js.log2("in EventJS", event);
+  //     {j|{
+  //    			next: (event) => {
+  //    				if (event) {
+  //    					console.log('Subscription_REASON: ' + JSON.stringify(event.value.data, null, 2));
+  //    					console.log('EVENT_REASON: ' + JSON.stringify(event, null, 2));
+  //    					setDisplay(true);
+  //    					let message = event.value.data.onCreateMessage.message;
+  //    					setMessage(message);
+  //    				}
+  //    			}
+  //    		}|j};
+  //   };
 
+  //   let subRequest = Graphql.OnCreateMessage.make();
+  //   let graphqlOperation: Types.graphqlOperation = {
+  //     query: subRequest##query,
+  //     variables: Some(subRequest##variables),
+  //   };
+  //   Js.log2("IN SUB USEFFECT: graphqlOperation", graphqlOperation);
+  //   // let sub = API.subWithWonka(graphqlOperation);
+  //   // let graphqlSubCb = API.graphqlSubCb(graphqlOperation);
+
+  //   // let _ =
+  //   //   graphqlSubCb
+  //   //   |> Wonka.fromObservable
+  //   //   |> Wonka.subscribe((. event) => {
+  //   //        Js.log2("data", event);
+  //   //        ();
+  //   //      });
+  //   let request = Types.OnCreateMessage.make();
+
+
+  //   let graphqlSubUrql = API.graphqlSubUrql(graphqlOperation);
+  //   let _ =
+  //     graphqlSubUrql
+  //     |> Wonka.fromObservable
+  //     |> Wonka.subscribe((. response) => {
+  //          Js.log2(
+  //            "response",
+  //            response,
+  //            //  switch (response) {
+  //            //  | Data(data) =>
+  //            //    let stateHash = data;
+  //            //    Js.log2("Already processed block", stateHash);
+  //            //  | Error(e) => Js.log2("error", e)
+  //            //  | NotFound => Js.log("NotFound")
+  //            //  };
+  //            //  Js.log2(
+  //            //    "testQuery",
+  //            //    data,
+  //            //  switch (data.response) {
+  //            //  | Data(d) =>
+  //            //    switch (Js.Json.stringifyAny(d)) {
+  //            //    | Some(s) => Js.log2("testQuery", s)
+  //            //    | None => ()
+  //            //    }
+  //            //  | Error(e) =>
+  //            //    switch (Js.Json.stringifyAny(e)) {
+  //            //    | Some(s) => Js.log2("testQuery", s)
+  //            //    | None => ()
+  //            //    }
+  //            //  | _ => ()
+  //            //  }
+  //            //  )
+  //          )
+  //        });
+  //   // |> Wonka.subscribe((. event) => {
+  //   //      Js.log2("graphqlSubUrql_data", event);
+  //   //      ();
+  //   //    });
+
+  //   // let _ =
+  //   //   sub
+  //   //   |> Wonka.fromObservable
+  //   //   |> Wonka.subscribe((. x) => Js.log2("obs", x));
+
+  //   None;
+  // });
+  React.useEffect0(() => {
     let subRequest = Graphql.OnCreateMessage.make();
     let graphqlOperation: Types.graphqlOperation = {
       query: subRequest##query,
       variables: Some(subRequest##variables),
     };
-    Js.log2("IN SUB USEFFECT: graphqlOperation", graphqlOperation);
-    // let sub = API.subWithWonka(graphqlOperation);
-    // let graphqlSubCb = API.graphqlSubCb(graphqlOperation);
-
-    // let _ =
-    //   graphqlSubCb
-    //   |> Wonka.fromObservable
-    //   |> Wonka.subscribe((. event) => {
-    //        Js.log2("data", event);
-    //        ();
-    //      });
-    let request = Types.OnCreateMessage.make();
-    // let executeSubscription = () => API.executeSubscription(~request);
-    // executeSubscription()
-    // |> Wonka.subscribe((. {Types.response}) =>
-    //      switch (response) {
-    //      | Data(data) =>
-    //        let stateHash = data;
-    //        Js.log2("Already processed block: %s", stateHash);
-    //      // if (BlockSet.has(processedBlocks, stateHash)) {
-    //      //   Js.log2("Already processed block: %s", stateHash);
-    //      //   false;
-    //      // } else {
-    //      //   BlockSet.add(processedBlocks, stateHash);
-    //      //   true;
-    //      // };
-    //      | Error(_)
-    //      | NotFound => Js.log("NotFound")
-    //      }
-    //    )
-    // |> ignore;
-    //  {
-    //      Js.log2("executeSubscription_RESPONSE: ", jsonStringify(r, Js.Nullable.null, 2))
-    //    })|>ignore;
-
-    let graphqlSubUrql = API.graphqlSubUrql(graphqlOperation);
+    let sub = API.subWithWonka2(graphqlOperation);
     let _ =
-      graphqlSubUrql
-      |> Wonka.fromObservable
-      |> Wonka.subscribe((. response) => {
-           Js.log2(
-             "response",
-             response,
-             //  switch (response) {
-             //  | Data(data) =>
-             //    let stateHash = data;
-             //    Js.log2("Already processed block", stateHash);
-             //  | Error(e) => Js.log2("error", e)
-             //  | NotFound => Js.log("NotFound")
-             //  };
-             //  Js.log2(
-             //    "testQuery",
-             //    data,
-             //  switch (data.response) {
-             //  | Data(d) =>
-             //    switch (Js.Json.stringifyAny(d)) {
-             //    | Some(s) => Js.log2("testQuery", s)
-             //    | None => ()
-             //    }
-             //  | Error(e) =>
-             //    switch (Js.Json.stringifyAny(e)) {
-             //    | Some(s) => Js.log2("testQuery", s)
-             //    | None => ()
-             //    }
-             //  | _ => ()
-             //  }
-             //  )
-           )
-         });
-    // |> Wonka.subscribe((. event) => {
-    //      Js.log2("graphqlSubUrql_data", event);
-    //      ();
-    //    });
+      sub |> Wonka.fromObservable |> Wonka.subscribe((. x) =>{
 
-    // let _ =
-    //   sub
-    //   |> Wonka.fromObservable
-    //   |> Wonka.subscribe((. x) => Js.log2("obs", x));
-
+        Js.log2("subWithWonka2_RAQ", x);
+let data = x;
+        });
+    // API.subWithWonka2(graphqlOperation)
+    // |> Wonka.fromObservable((. result) => Js.log(result));
     None;
   });
   let handleChange = e => {

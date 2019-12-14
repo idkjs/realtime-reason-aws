@@ -90,7 +90,12 @@ let graphqlSubUrql = graphqlOperation => {
 let subWithWonka = graphqlOperation => {
   _graphqlSubWonka(api, graphqlOperation);
 };
-
+[@bs.send]
+external _graphqlSubWonka2:
+  (t, Types.graphqlOperation) => Wonka.observableT('a) =
+  "graphql";
+  let subWithWonka2 = graphqlOperation =>
+    _graphqlSubWonka2(api, graphqlOperation);
 let clientResponseToReason =
     (~parse: Js.Json.t => 'response, ~result: Types.operationResult)
     : Types.clientResponse('response) => {
