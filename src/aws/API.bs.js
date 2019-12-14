@@ -12,48 +12,63 @@ function configure(config) {
   return /* () */0;
 }
 
-var objectWithCallback_closed = true;
+function observerLikeEvent_next($$event) {
+  console.log("event", $$event);
+  return /* () */0;
+}
 
-var objectWithCallback_next = (function ($$event) {
-    console.log("event", $$event);
-    return /* () */0;
-  });
+function observerLikeEvent_error(errorValue) {
+  console.log(errorValue);
+  return /* () */0;
+}
 
-var objectWithCallback_error = (function (errorValue) {
-    console.log(errorValue);
-    return /* () */0;
-  });
+function observerLikeEvent_complete(param) {
+  console.log("complete");
+  return /* () */0;
+}
 
-var objectWithCallback_complete = (function (param) {
-    console.log("complete");
-    return /* () */0;
-  });
+var observerLikeEvent = {
+  next: observerLikeEvent_next,
+  error: observerLikeEvent_error,
+  complete: observerLikeEvent_complete
+};
 
-var objectWithCallback = {
-  closed: objectWithCallback_closed,
-  next: objectWithCallback_next,
-  error: objectWithCallback_error,
-  complete: objectWithCallback_complete
+function listener_next($$event) {
+  console.log("Subscription: ", JSON.stringify($$event.value.data, null, 2));
+  console.log("EVENT: ", JSON.stringify($$event, null, 2));
+  var message = $$event.value.data.message;
+  console.log("MESSAGE: ", JSON.stringify(message, null, 2));
+  return /* () */0;
+}
+
+function listener_error(errorValue) {
+  console.log(errorValue);
+  return /* () */0;
+}
+
+function listener_complete(param) {
+  console.log("COMPLETE");
+  return /* () */0;
+}
+
+var listener = {
+  next: listener_next,
+  error: listener_error,
+  complete: listener_complete
 };
 
 function mutate(graphqlOperation) {
   return Api.default.graphql(graphqlOperation);
 }
 
-function graphqlSubCb(graphqlOperation) {
+function subscriptionSink(graphqlOperation) {
   return Api.default.graphql(graphqlOperation);
 }
 
-function graphqlSubUrql(graphqlOperation) {
-  return Api.default.graphql(graphqlOperation);
-}
-
-function subWithWonka(graphqlOperation) {
-  return Api.default.graphql(graphqlOperation);
-}
-
-function subWithWonka2(graphqlOperation) {
-  return Api.default.graphql(graphqlOperation);
+function subObsLike(graphqlOperation) {
+  return Wonka.map((function (observableLikeValue) {
+                  return observableLikeValue;
+                }))(Wonka.fromObservable(Api.default.graphql(graphqlOperation)));
 }
 
 function clientResponseToReason(parse, result) {
@@ -96,12 +111,11 @@ function executeSubscription(request) {
 }
 
 exports.configure = configure;
-exports.objectWithCallback = objectWithCallback;
+exports.observerLikeEvent = observerLikeEvent;
+exports.listener = listener;
 exports.mutate = mutate;
-exports.graphqlSubCb = graphqlSubCb;
-exports.graphqlSubUrql = graphqlSubUrql;
-exports.subWithWonka = subWithWonka;
-exports.subWithWonka2 = subWithWonka2;
+exports.subscriptionSink = subscriptionSink;
+exports.subObsLike = subObsLike;
 exports.clientResponseToReason = clientResponseToReason;
 exports.executeQuery = executeQuery;
 exports.executeSubscription = executeSubscription;

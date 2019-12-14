@@ -83,10 +83,12 @@ type jsResponse('response) = {
 //     error: option(GraphqlError.t),
 //     response: ApiClient.ClientTypes.response('response),
 //   };
-type executionResult = {
-  errors: Js.Nullable.t(array(string)),
-  data: option(Js.Json.t),
-};
+// type executionResult = {
+//   errors: Js.Nullable.t(array(string)),
+//   data: option(Js.Json.t),
+// };
+// type operation = graphqlOperation => Js.Promise.t(executionResult);
+
 type onCreateMessage = {
   __typename: string,
   message: string,
@@ -101,13 +103,24 @@ module OnCreateMessage = [%graphql
     }
 |}
 ];
-// type event = {
-//   provider: Js.Json.t,
-//   value,
-// }
-// and value = {data: onCreateMessage};
-// type errorValue = {message: string};
-type operation = graphqlOperation => Js.Promise.t(executionResult);
+type event = {
+  provider: Js.Json.t,
+  value,
+}
+and value = {data: onCreateMessage};
+type errorValue = {message: string};
+
+type observerLike('value) = {
+  next: event => unit,
+  error: errorValue => unit,
+  complete: unit => unit,
+};
+
+type observableLike('value) = {
+  subscribe:
+    observerLike('value) => {. [@bs.meth] "unsubscribe": unit => unit},
+};
+type subscription = graphqlOperation => Wonka.observableT(observableLike(observerLike(value)));
 
 type message = {
   id: option(string),

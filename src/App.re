@@ -30,14 +30,14 @@ let make = () => {
     let message = {"id": None, "message": value, "createdAt": None};
     Js.log2("Message: ", message);
     let mutationRequest = Graphql.CreateMessage.make(~input=message, ());
-    let graphqlOperation: Types.graphqlOperation = {
+    let graphqlOperation: API.graphqlOperation = {
       query: mutationRequest##query,
       variables: Some(mutationRequest##variables),
     };
     API.mutate(graphqlOperation)
     |> Js.Promise.then_(response =>
          {
-           Js.log2("reason_broadcaster_mutation", response.data);
+           Js.log2("reason_broadcaster_mutation", response);
          }
          |> Js.Promise.resolve
        );
@@ -76,7 +76,6 @@ let make = () => {
   //   //        ();
   //   //      });
   //   let request = Types.OnCreateMessage.make();
-
 
   //   let graphqlSubUrql = API.graphqlSubUrql(graphqlOperation);
   //   let _ =
@@ -124,22 +123,102 @@ let make = () => {
 
   //   None;
   // });
+  let handleEvent = event => {
+    let eventJst = event->Obj.magic;
+    let eventJstMsg = eventJst##value##data##onCreateMessage##message;
+    setMessage(_ => Some(eventJstMsg));
+    Js.log2("event->eventJstMsg", eventJstMsg);
+    // let test: Js.t('a) => Types.event =
+    //   event => {provider: event##provider, value: event##value};
+    // Js.log2("event->castToJst", eventJst);
+    // let onCreateMessage = test(eventJst).value.data;
+    // let message = onCreateMessage.message;
+    // let typeName = onCreateMessage.__typename;
+    // Js.log2("event->test", test(eventJst));
+    // Js.log2("event_onCreateMessage", onCreateMessage);
+    // Js.log2(
+    //   "jsonStringify_onCreateMessage",
+    //   Utils.jsonStringify(onCreateMessage, Js.Nullable.null, 2),
+    // );
+    // Js.log2("event_onCreateMessage_message", message);
+    // Js.log2("event_onCreateMessage_typeName", typeName);
+    // // event->Js.log;
+  };
   React.useEffect0(() => {
     let subRequest = Graphql.OnCreateMessage.make();
-    let graphqlOperation: Types.graphqlOperation = {
+    let graphqlOperation: API.graphqlOperation = {
       query: subRequest##query,
       variables: Some(subRequest##variables),
     };
-    let sub = API.subWithWonka2(graphqlOperation);
-    let _ =
-      sub |> Wonka.fromObservable |> Wonka.subscribe((. x) =>{
-
-        Js.log2("subWithWonka2_RAQ", x);
-let data = x;
-        });
+    let wonkaObservableT = API.subscriptionSink(graphqlOperation);
+    let wonkaSubscriptionT =
+      wonkaObservableT
+      |> Wonka.fromObservable
+      |> Wonka.subscribe((. event) => {
+           handleEvent(event);
+           Js.log2("wonkaSubscriptionT_event", event);
+         });
+    Some(() => wonkaSubscriptionT.unsubscribe());
+    // let subSink = API.subObsLike(graphqlOperation);
+    // |> Wonka.map((. event) =>
+    //      switch (event) {
+    //      | event => {
+    //          next: event => {
+    //            Js.log2(
+    //              "Subscription: ",
+    //              Utils.jsonStringify(event.value.data, Js.Nullable.null, 2),
+    //            );
+    //            Js.log2(
+    //              "EVENT: ",
+    //              Utils.jsonStringify(event, Js.Nullable.null, 2),
+    //            );
+    //            let message = event.value.data.message;
+    //            setMessage(_ => Some(message));
+    //          },
+    //          error: errorValue => Js.log(errorValue),
+    //          complete: _ => Js.log("COMPLETE"),
+    //        }
+    //      }
+    //    );
+    // |> Wonka.map((. observableLikeValue) => observableLikeValue)
+    // |> Wonka.subscribe(
+    //      (. API.observableLikeValue) =>
+    //        {
+    //          next: event => {
+    //            Js.log2(
+    //              "Subscription: ",
+    //              Utils.jsonStringify(event.value.data, Js.Nullable.null, 2),
+    //            );
+    //            Js.log2(
+    //              "EVENT: ",
+    //              Utils.jsonStringify(event, Js.Nullable.null, 2),
+    //            );
+    //            let message = event.value.data.message;
+    //            setMessage(_ => Some(message));
+    //          },
+    //          error: errorValue => Js.log(errorValue),
+    //          complete: _ => Js.log("COMPLETE"),
+    //        },
+    //    );
+    // let _ =
+    //   sub
+    //   |> Wonka.subscribe((. x) => {
+    //        Js.log2(
+    //          "subObsLike_",
+    //          x,
+    //          // let data = x;
+    //        )
+    //      });
+    //     let sub = API.subWithWonka2(graphqlOperation);
+    //     let _ =
+    //       sub |> Wonka.fromObservable |> Wonka.subscribe((. x) =>{
+    //         Js.log2("subWithWonka2_RAQ", x);
+    // // let data = x;
+    //         });
     // API.subWithWonka2(graphqlOperation)
     // |> Wonka.fromObservable((. result) => Js.log(result));
-    None;
+    // Some(() => sub.unsubscribe());
+    // None;
   });
   let handleChange = e => {
     let value = e |> getInputValue;

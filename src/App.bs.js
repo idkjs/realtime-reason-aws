@@ -28,6 +28,7 @@ function App(Props) {
   var match = React.useState((function () {
           return ;
         }));
+  var setMessage = match[1];
   var message = match[0];
   var match$1 = React.useState((function () {
           return "";
@@ -55,8 +56,16 @@ function App(Props) {
       variables: graphqlOperation_variables
     };
     return API$ReactTemplate.mutate(graphqlOperation).then((function (response) {
-                  return Promise.resolve((console.log("reason_broadcaster_mutation", response.data), /* () */0));
+                  return Promise.resolve((console.log("reason_broadcaster_mutation", response), /* () */0));
                 }));
+  };
+  var handleEvent = function ($$event) {
+    var eventJstMsg = $$event.value.data.onCreateMessage.message;
+    Curry._1(setMessage, (function (param) {
+            return eventJstMsg;
+          }));
+    console.log("event->eventJstMsg", eventJstMsg);
+    return /* () */0;
   };
   React.useEffect((function () {
           var subRequest = Graphql$ReactTemplate.OnCreateMessage.make(/* () */0);
@@ -66,12 +75,15 @@ function App(Props) {
             query: graphqlOperation_query,
             variables: graphqlOperation_variables
           };
-          var sub = API$ReactTemplate.subWithWonka2(graphqlOperation);
-          Wonka.subscribe((function (x) {
-                    console.log("subWithWonka2_RAQ", x);
+          var wonkaObservableT = API$ReactTemplate.subscriptionSink(graphqlOperation);
+          var wonkaSubscriptionT = Wonka.subscribe((function ($$event) {
+                    handleEvent($$event);
+                    console.log("wonkaSubscriptionT_event", $$event);
                     return /* () */0;
-                  }))(Wonka.fromObservable(sub));
-          return ;
+                  }))(Wonka.fromObservable(wonkaObservableT));
+          return (function (param) {
+                    return Curry._1(wonkaSubscriptionT.unsubscribe, /* () */0);
+                  });
         }), ([]));
   return React.createElement("div", {
               className: "container"
