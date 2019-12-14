@@ -3,9 +3,11 @@
 
 var Wonka = require("wonka/src/wonka.js");
 var Api = require("@aws-amplify/api");
+var Index = require("@aws-amplify/pubsub/lib-esm/index");
 
 function configure(config) {
   Api.default.configure(config);
+  Index.default.configure(config);
   return /* () */0;
 }
 

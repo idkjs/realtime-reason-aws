@@ -1,7 +1,7 @@
 open Utils;
 [%bs.raw {|require('./App.css')|}];
 [%bs.raw {|require('bootstrap/dist/css/bootstrap.min.css')|}];
-
+let logo = [%bs.raw {|require('./logo.svg')|}];
 Amplify.configure(AwsExports.config);
 API.configure(AwsExports.config);
 
@@ -51,7 +51,8 @@ let make = () => {
     let value = e |> getInputValue;
     setValue(_ => value);
   };
-  <div className="container">
+  <div className="App">
+  <img src=logo className="App-logo" alt="logo" />
     <div className="jumbotron jumbotron-fluid p-0">
       <h2 className="center"> "Reason Broadcaster"->React.string </h2>
       {switch (message) {

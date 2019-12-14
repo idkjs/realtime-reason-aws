@@ -3,10 +3,9 @@ import Amplify from '@aws-amplify/core';
 import '@aws-amplify/pubsub';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { default as React, useEffect, useState } from 'react';
-import Demo from './Demo.bs';
-import './App.css';
-import aws_exports from './aws-exports';
-import logo from './logo.svg';
+import '../App.css';
+import aws_exports from '../aws-exports';
+import logo from '../logo.svg';
 Amplify.configure(aws_exports);
 
 const createMessage = `mutation createMessage($message: String!){
@@ -102,7 +101,6 @@ function App() {
 				</div> :
 				null}
 				<br />
-			<Demo />
 		</div>
 	);
 }

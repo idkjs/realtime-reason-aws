@@ -1,8 +1,15 @@
 type t;
 [@bs.module "@aws-amplify/api"] external api: t = "default";
-[@bs.send] external configure: (t, AwsExports.t) => unit = "configure";
-let configure = config => configure(api, config);
-
+[@bs.send] external configureApi: (t, AwsExports.t) => unit = "configure";
+// let configure = config => configure(api, config);
+type pubsub;
+[@bs.module "@aws-amplify/pubsub/lib-esm/index"] external pubsub: pubsub = "default";
+[@bs.send]
+external configurePubSub: (pubsub, AwsExports.t) => unit = "configure";
+let configure = config => {
+  configureApi(api, config);
+  configurePubSub(pubsub, config);
+};
 /* this is unused because I haven't figured out how to use it yet, but a cleaner version of this code will use it. */
 let listener: Types.observerLike('event) = {
   next: event => {

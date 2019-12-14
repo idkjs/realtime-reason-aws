@@ -15,6 +15,8 @@ var AwsExports$ReactTemplate = require("./aws/AwsExports.bs.js");
 
 ((require('bootstrap/dist/css/bootstrap.min.css')));
 
+var logo = (require('./logo.svg'));
+
 Amplify$ReactTemplate.configure(AwsExports$ReactTemplate.config);
 
 API$ReactTemplate.configure(AwsExports$ReactTemplate.config);
@@ -74,8 +76,12 @@ function Demo(Props) {
                   });
         }));
   return React.createElement("div", {
-              className: "container"
-            }, React.createElement("div", {
+              className: "App"
+            }, React.createElement("img", {
+                  className: "App-logo",
+                  alt: "logo",
+                  src: logo
+                }), React.createElement("div", {
                   className: "jumbotron jumbotron-fluid p-0"
                 }, React.createElement("h2", {
                       className: "center"
@@ -117,6 +123,7 @@ var make = Demo;
 
 var $$default = Demo;
 
+exports.logo = logo;
 exports.make = make;
 exports.$$default = $$default;
 exports.default = $$default;
