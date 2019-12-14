@@ -1,3 +1,4 @@
+/* hooks version of original demo in `src/js/AppClass.js */
 import API, { graphqlOperation } from '@aws-amplify/api';
 import Amplify from '@aws-amplify/core';
 import '@aws-amplify/pubsub';

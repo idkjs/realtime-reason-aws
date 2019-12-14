@@ -52,42 +52,44 @@ let make = () => {
     setValue(_ => value);
   };
   <div className="App">
-  <img src=logo className="App-logo" alt="logo" />
-    <div className="jumbotron jumbotron-fluid p-0">
-      <h2 className="center"> "Reason Broadcaster"->React.string </h2>
-      {switch (message) {
-       | Some(message) =>
-         <div className="container">
-           <div className="card bg-success">
-             <h2 className="center">
-               "Reason WSS Sub Response"->React.string
-             </h2>
-             <h3 className="card-text text-white p-2">
-               message->React.string
-             </h3>
+    <img src=logo className="App-logo" alt="logo" />
+    <div className="container">
+      <div className="jumbotron jumbotron-fluid p-0">
+        <h2 className="center"> "Reason Broadcaster"->React.string </h2>
+        {switch (message) {
+         | Some(message) =>
+           <div className="container">
+             <div className="card bg-success">
+               <h2 className="center">
+                 "Reason WSS Sub Response"->React.string
+               </h2>
+               <h3 className="card-text text-white p-2">
+                 message->React.string
+               </h3>
+             </div>
            </div>
-         </div>
-       | None => React.null
-       }}
-    </div>
-    <br />
-    <form onSubmit={e => handleSubmit(e) |> ignore}>
-      <div className="form-group">
-        <input
-          className="form-control form-control-lg"
-          type_="text"
-          value
-          onChange={e => handleChange(e)}
-        />
-        <input
-          id="button"
-          type_="submit"
-          value="Submit"
-          className="btn btn-primary"
-        />
+         | None => React.null
+         }}
       </div>
-    </form>
-    <br />
+      <br />
+      <form onSubmit={e => handleSubmit(e) |> ignore}>
+        <div className="form-group">
+          <input
+            className="form-control form-control-lg"
+            type_="text"
+            value
+            onChange={e => handleChange(e)}
+          />
+          <input
+            id="button"
+            type_="submit"
+            value="Submit"
+            className="btn btn-primary"
+          />
+        </div>
+      </form>
+      <br />
+    </div>
   </div>;
 };
 let default = make;

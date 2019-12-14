@@ -1,3 +1,4 @@
+/* this is the orginal demo. I changed it to hooks in `src/js/App.js` */
 import React, { Component } from "react";
 import { useEffect, useReducer } from 'react'
 import "./App.css";

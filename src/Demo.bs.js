@@ -82,41 +82,43 @@ function Demo(Props) {
                   alt: "logo",
                   src: logo
                 }), React.createElement("div", {
-                  className: "jumbotron jumbotron-fluid p-0"
-                }, React.createElement("h2", {
-                      className: "center"
-                    }, "Reason Broadcaster"), message !== undefined ? React.createElement("div", {
-                        className: "container"
-                      }, React.createElement("div", {
-                            className: "card bg-success"
-                          }, React.createElement("h2", {
-                                className: "center"
-                              }, "Reason WSS Sub Response"), React.createElement("h3", {
-                                className: "card-text text-white p-2"
-                              }, message))) : null), React.createElement("br", undefined), React.createElement("form", {
-                  onSubmit: (function (e) {
-                      handleSubmit(e);
-                      return /* () */0;
-                    })
+                  className: "container"
                 }, React.createElement("div", {
-                      className: "form-group"
-                    }, React.createElement("input", {
-                          className: "form-control form-control-lg",
-                          type: "text",
-                          value: match$1[0],
-                          onChange: (function (e) {
-                              var e$1 = e;
-                              var value = Utils$ReactTemplate.getInputValue(e$1);
-                              return Curry._1(setValue, (function (param) {
-                                            return value;
-                                          }));
-                            })
-                        }), React.createElement("input", {
-                          className: "btn btn-primary",
-                          id: "button",
-                          type: "submit",
-                          value: "Submit"
-                        }))), React.createElement("br", undefined));
+                      className: "jumbotron jumbotron-fluid p-0"
+                    }, React.createElement("h2", {
+                          className: "center"
+                        }, "Reason Broadcaster"), message !== undefined ? React.createElement("div", {
+                            className: "container"
+                          }, React.createElement("div", {
+                                className: "card bg-success"
+                              }, React.createElement("h2", {
+                                    className: "center"
+                                  }, "Reason WSS Sub Response"), React.createElement("h3", {
+                                    className: "card-text text-white p-2"
+                                  }, message))) : null), React.createElement("br", undefined), React.createElement("form", {
+                      onSubmit: (function (e) {
+                          handleSubmit(e);
+                          return /* () */0;
+                        })
+                    }, React.createElement("div", {
+                          className: "form-group"
+                        }, React.createElement("input", {
+                              className: "form-control form-control-lg",
+                              type: "text",
+                              value: match$1[0],
+                              onChange: (function (e) {
+                                  var e$1 = e;
+                                  var value = Utils$ReactTemplate.getInputValue(e$1);
+                                  return Curry._1(setValue, (function (param) {
+                                                return value;
+                                              }));
+                                })
+                            }), React.createElement("input", {
+                              className: "btn btn-primary",
+                              id: "button",
+                              type: "submit",
+                              value: "Submit"
+                            }))), React.createElement("br", undefined)));
 }
 
 var make = Demo;
