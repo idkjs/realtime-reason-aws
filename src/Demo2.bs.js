@@ -19,7 +19,7 @@ Amplify$ReactTemplate.configure(AwsExports$ReactTemplate.config);
 
 API$ReactTemplate.configure(AwsExports$ReactTemplate.config);
 
-function Demo(Props) {
+function Demo2(Props) {
   var match = React.useState((function () {
           return ;
         }));
@@ -53,6 +53,9 @@ function Demo(Props) {
                   return Promise.resolve((console.log("reason_broadcaster_mutation", response), /* () */0));
                 }));
   };
+  var extractMessageFrom = function ($$event) {
+    return $$event.value.data.onCreateMessage.message;
+  };
   React.useEffect((function () {
           var subRequest = Graphql$ReactTemplate.OnCreateMessage.make(/* () */0);
           var graphqlOperation_query = subRequest.query;
@@ -61,18 +64,19 @@ function Demo(Props) {
             query: graphqlOperation_query,
             variables: graphqlOperation_variables
           };
-          var messageObserver = API$ReactTemplate.subscribeToMessage(graphqlOperation);
-          var subscription = Wonka.subscribe((function (message) {
+          var observer = API$ReactTemplate.subscribe(graphqlOperation);
+          var subscription = Wonka.subscribe((function ($$event) {
+                    var message = extractMessageFrom($$event);
                     Curry._1(setMessage, (function (param) {
                             return message;
                           }));
                     console.log("subscription_event", message);
                     return /* () */0;
-                  }))(messageObserver);
+                  }))(Wonka.fromObservable(observer));
           return (function (param) {
                     return Curry._1(subscription.unsubscribe, /* () */0);
                   });
-        }));
+        }), ([]));
   return React.createElement("div", {
               className: "container"
             }, React.createElement("div", {
@@ -113,9 +117,9 @@ function Demo(Props) {
                         }))), React.createElement("br", undefined));
 }
 
-var make = Demo;
+var make = Demo2;
 
-var $$default = Demo;
+var $$default = Demo2;
 
 exports.make = make;
 exports.$$default = $$default;

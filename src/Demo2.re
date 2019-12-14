@@ -30,18 +30,30 @@ let make = () => {
        });
   };
 
-  React.useEffect(() => {
+  let extractMessageFrom = event => {
+    /* use Obj.magic to change time, otherwise code in Wonka.subcribe breaks. */
+    let event = event->Obj.magic;
+    /* get the message value on event and post to ui */
+    let message = event##value##data##onCreateMessage##message;
+    message;
+  };
+  React.useEffect0(() => {
     let subRequest = Graphql.OnCreateMessage.make();
     let graphqlOperation: Types.graphqlOperation = {
       query: subRequest##query,
       variables: Some(subRequest##variables),
     };
-
-    let messageObserver: Wonka_types.sinkT(string) => unit =
-      API.subscribeToMessage(graphqlOperation);
+    /* The observer's type is:
+       `Wonka.observableT(
+          ReactTemplate.Types.observableLike(ReactTemplate.Types.observerLike('a))
+          )`
+           */
+    let observer = API.subscribe(graphqlOperation);
     let subscription =
-      messageObserver
-      |> Wonka.subscribe((. message) => {
+      observer
+      |> Wonka.fromObservable
+      |> Wonka.subscribe((. event) => {
+            let message = extractMessageFrom(event);
            setMessage(_ => Some(message));
            Js.log2("subscription_event", message);
          });
