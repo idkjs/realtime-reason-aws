@@ -3,57 +3,7 @@ type t;
 [@bs.send] external configure: (t, AwsExports.t) => unit = "configure";
 let configure = config => configure(api, config);
 
-// type event = {
-//   provider: Js.Json.t,
-//   value,
-// }
-// and value = {data: Types.onCreateMessage};
-// type errorValue = {message: string};
-// type subscriptionObserver = {
-//   closed: bool,
-//   next: event => unit,
-//   error: errorValue => unit,
-//   complete: unit,
-// };
-// type objectWithCallback = {
-//   closed: option(bool),
-//   next: option(event => unit),
-//   error: option(errorValue => unit),
-//   complete: option(unit=>unit),
-// };
-// type objectWithCallback('event) = {
-//   closed: option(bool),
-//   next: option(event => unit),
-//   error: option(errorValue => unit),
-//   complete: option(unit => unit),
-// };
-// type observerLike('value) = {
-//   next: event => unit,
-//   error: errorValue => unit,
-//   complete: unit => unit,
-// };
-// type observableLike('value) = {
-//   subscribe:
-//     observerLike('value) => {. [@bs.meth] "unsubscribe": unit => unit},
-// };
-
-// type eventCallback = {
-//   closed: option(bool),
-//   next: option(event => unit),
-//   error: option(errorValue => unit),
-//   complete: option(unit => unit),
-// };
-// let objectWithCallback: objectWithCallback('event) = {
-//   next: Some(event => Js.log2("event", event)),
-//   error: Some(errorValue => Js.log(errorValue)),
-//   closed: Some(true),
-//   complete: Some(_ => Js.log("complete")),
-// };
-let observerLikeEvent: Types.observerLike('event) = {
-  next: event => Js.log2("event", event),
-  error: errorValue => Js.log(errorValue),
-  complete: _ => Js.log("complete"),
-};
+/* this is unused because I haven't figured out how to use it yet, but a cleaner version of this code will use it. */
 let listener: Types.observerLike('event) = {
   next: event => {
     Js.log2(
@@ -63,115 +13,44 @@ let listener: Types.observerLike('event) = {
     Js.log2("EVENT: ", Utils.jsonStringify(event, Js.Nullable.null, 2));
     let message = event.value.data.message;
     Js.log2("MESSAGE: ", Utils.jsonStringify(message, Js.Nullable.null, 2));
-    // setMessage(_ => Some(message));
   },
   error: errorValue => Js.log(errorValue),
   complete: _ => Js.log("COMPLETE"),
 };
 
-// let objectWithCallback: objectWithCallback('event) = {
-//   next: Some(event => Js.log2("event", event)),
-//   error: Some(errorValue => Js.log(errorValue)),
-//   closed: Some(true),
-//   complete: Some(_ => Js.log("complete")),
-// };
-// don't have to bind to this? it happens on the aws-amplify side i think.
-// [@bs.module "@aws-amplify/pubsub"] external pubsub: t = "default";
-type executionResult = {
-  errors: option(array(string)),
-  data: option(Js.Json.t),
-};
-type graphqlOperation = {
-  query: string,
-  variables: option(Js.Json.t),
-};
-[@bs.send]
-external _graphql: (t, graphqlOperation) => Js.Promise.t(executionResult) =
-  "graphql";
-[@bs.send]
-external _graphqlSubWonka:
-  (t, graphqlOperation) => Wonka.observableT(Types.clientResponse('response)) =
-  "graphql";
+/* don't have to bind to this? it happens on the aws-amplify side i think.
+   The `API.graphql` function returns a `promise` for queries and mutations and an `Observable` for subscriptions. See: https://github.com/aws-amplify/amplify-js/blob/master/packages/api/src/API.ts#L350
+
+   [@bs.module "@aws-amplify/pubsub"] external pubsub: t = "default"; */
 
 [@bs.send]
-external _graphqlSubUrql:
-  (t, graphqlOperation) => Wonka.observableT(Types.clientResponse('response)) =
+external _graphql:
+  (t, Types.graphqlOperation) => Js.Promise.t(Types.executionResult) =
   "graphql";
 
-type operation = graphqlOperation => Js.Promise.t(executionResult);
-// type subscription =
-//   graphqlOperation =>
-//   Wonka.observableT(Types.observableLike('event));
-let mutate: operation =
+let mutate: Types.operation =
   graphqlOperation => {
     _graphql(api, graphqlOperation);
   };
+/* our api subscription query on the amplify/api side which returns and observable
+   see:https://github.com/aws-amplify/amplify-js/blob/867412030de57fd74078b609252de6f7f81ad331/packages/pubsub/src/PubSub.ts#L149
+    */
 [@bs.send]
-external _graphqlObsLike:
-  (t, graphqlOperation) =>
+external _subscribe:
+  (t, Types.graphqlOperation) =>
   Wonka.observableT(Types.observableLike(Types.observerLike('value))) =
   "graphql";
-  let subscriptionSink = graphqlOperation =>
-    _graphqlObsLike(api, graphqlOperation);
-let subObsLike = graphqlOperation => {
-  _graphqlObsLike(api, graphqlOperation)
-  |> Wonka.fromObservable(_)
-  |> Wonka.map((. observableLikeValue) => observableLikeValue);
+let subscribe = graphqlOperation => _subscribe(api, graphqlOperation);
+
+let extractMessageFrom = event => {
+  /* use Obj.magic to change time, otherwise code in Wonka.subcribe breaks. */
+  let event = event->Obj.magic;
+  /* get the message value on event and post to ui */
+  let message = event##value##data##onCreateMessage##message;
+  message;
 };
-
-let clientResponseToReason =
-    (~parse: Js.Json.t => 'response, ~result: Types.operationResult)
-    : Types.clientResponse('response) => {
-  let data = result.data->Belt.Option.map(parse);
-  let error = result.error;
-
-  let response =
-    switch (data, error) {
-    | (Some(data), _) => Types.Data(data)
-    | (None, Some(error)) => Error(error)
-    | (None, None) => NotFound
-    };
-
-  {data, error, response};
-};
-[@bs.send]
-external _graphql:
-  (~client: t, ~query: graphqlOperation, unit) =>
-  Wonka.Types.sourceT(Types.operationResult) =
-  "graphql";
-let executeQuery =
-    (~request: Types.request('response), ())
-    : Wonka.Types.sourceT(Types.clientResponse('response)) => {
-  let req: graphqlOperation = {
-    query: request.query,
-    variables: Some(request.variables),
-  };
-  // let req =
-  //   Types.createRequest(
-  //     ~query=request##query,
-  //     ~variables=request##variables,
-  //     (),
-  //   );
-  let parse = request.parse;
-
-  _graphql(~client=api, ~query=req, ())
-  |> Wonka.map((. result) => clientResponseToReason(~parse, ~result));
-};
-
-[@bs.send]
-external executeSubscriptionJs:
-  (t, graphqlOperation) => Wonka.Types.sourceT(Types.operationResult) =
-  "graphql";
-
-let executeSubscription =
-    (~request: Types.request('response))
-    : Wonka.Types.sourceT(Types.clientResponse('response)) => {
-  let req: graphqlOperation = {
-    query: request.query,
-    variables: Some(request.variables),
-  };
-  let parse = request.parse;
-
-  executeSubscriptionJs(api, req)
-  |> Wonka.map((. result) => clientResponseToReason(~parse, ~result));
-};
+/* setting up like this returns the message on which we can call `setMessage()` */
+let subscribeToMessage = graphqlOperation =>
+  _subscribe(api, graphqlOperation)
+  |> Wonka.fromObservable
+  |> Wonka.map((. event) => extractMessageFrom(event));

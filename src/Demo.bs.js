@@ -6,13 +6,10 @@ var Wonka = require("wonka/src/wonka.js");
 var React = require("react");
 var Caml_option = require("bs-platform/lib/js/caml_option.js");
 var API$ReactTemplate = require("./aws/API.bs.js");
+var Utils$ReactTemplate = require("./utils/Utils.bs.js");
 var Amplify$ReactTemplate = require("./aws/Amplify.bs.js");
 var Graphql$ReactTemplate = require("./graphql/Graphql.bs.js");
 var AwsExports$ReactTemplate = require("./aws/AwsExports.bs.js");
-
-function getInputValue(e) {
-  return e.target.value;
-}
 
 ((require('./App.css')));
 
@@ -22,7 +19,7 @@ Amplify$ReactTemplate.configure(AwsExports$ReactTemplate.config);
 
 API$ReactTemplate.configure(AwsExports$ReactTemplate.config);
 
-function App(Props) {
+function Demo(Props) {
   var match = React.useState((function () {
           return ;
         }));
@@ -56,12 +53,6 @@ function App(Props) {
                   return Promise.resolve((console.log("reason_broadcaster_mutation", response), /* () */0));
                 }));
   };
-  var handleSubscriptionEvent = function ($$event) {
-    var message = $$event.value.data.onCreateMessage.message;
-    return Curry._1(setMessage, (function (param) {
-                  return message;
-                }));
-  };
   React.useEffect((function () {
           var subRequest = Graphql$ReactTemplate.OnCreateMessage.make(/* () */0);
           var graphqlOperation_query = subRequest.query;
@@ -70,14 +61,16 @@ function App(Props) {
             query: graphqlOperation_query,
             variables: graphqlOperation_variables
           };
-          var wonkaObservableT = API$ReactTemplate.subscriptionSink(graphqlOperation);
-          var wonkaSubscriptionT = Wonka.subscribe((function ($$event) {
-                    handleSubscriptionEvent($$event);
-                    console.log("wonkaSubscriptionT_event", $$event);
+          var messageObserver = API$ReactTemplate.subscribeToMessage(graphqlOperation);
+          var subscription = Wonka.subscribe((function (message) {
+                    Curry._1(setMessage, (function (param) {
+                            return message;
+                          }));
+                    console.log("subscription_event", message);
                     return /* () */0;
-                  }))(Wonka.fromObservable(wonkaObservableT));
+                  }))(messageObserver);
           return (function (param) {
-                    return Curry._1(wonkaSubscriptionT.unsubscribe, /* () */0);
+                    return Curry._1(subscription.unsubscribe, /* () */0);
                   });
         }), ([]));
   return React.createElement("div", {
@@ -107,7 +100,7 @@ function App(Props) {
                           value: match$1[0],
                           onChange: (function (e) {
                               var e$1 = e;
-                              var value = e$1.target.value;
+                              var value = Utils$ReactTemplate.getInputValue(e$1);
                               return Curry._1(setValue, (function (param) {
                                             return value;
                                           }));
@@ -120,11 +113,10 @@ function App(Props) {
                         }))), React.createElement("br", undefined));
 }
 
-var make = App;
+var make = Demo;
 
-var $$default = App;
+var $$default = Demo;
 
-exports.getInputValue = getInputValue;
 exports.make = make;
 exports.$$default = $$default;
 exports.default = $$default;
