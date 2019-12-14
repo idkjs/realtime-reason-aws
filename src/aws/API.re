@@ -50,7 +50,7 @@ external _subscribe:
 let subscribe = graphqlOperation => _subscribe(api, graphqlOperation);
 
 let extractMessageFrom = event => {
-  /* use Obj.magic to change time, otherwise code in Wonka.subcribe breaks. */
+  /* use Obj.magic to change type, otherwise code in Wonka.subcribe breaks. */
   let event = event->Obj.magic;
   /* get the message value on event and post to ui */
   let message = event##value##data##onCreateMessage##message;
