@@ -2,6 +2,7 @@ type executionResult = {
   errors: option(array(string)),
   data: option(Js.Json.t),
 };
+/* https://github.com/aws-amplify/amplify-js/blob/867412030de57fd74078b609252de6f7f81ad331/packages/api/src/API.ts#L31-L34 */
 type graphqlOperation = {
   query: string,
   variables: option(Js.Json.t),
