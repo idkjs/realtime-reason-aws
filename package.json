@@ -13,13 +13,11 @@
     "@aws-amplify/core": "2.2.0",
     "@aws-amplify/pubsub": "2.1.1",
     "bootstrap": "4.3.1",
-    "bs-observable": "https://github.com/idkjs/bs-observable.git",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-scripts": "3.3.0",
     "reason-react": "0.7.0",
-    "wonka": "3.2.1",
-    "zen-observable": "0.8.15"
+    "wonka": "3.2.1"
   },
   "scripts": {
     "start": "react-scripts start",
