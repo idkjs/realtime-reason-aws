@@ -5,8 +5,5 @@ var AwsExportsJs = require("../aws-exports.js");
 
 var config = AwsExportsJs.default;
 
-var aws_config = AwsExportsJs.default;
-
 exports.config = config;
-exports.aws_config = aws_config;
 /* config Not a pure module */
