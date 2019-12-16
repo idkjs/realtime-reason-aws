@@ -31,7 +31,7 @@ let make = () => {
   };
 
   let extractMessageFrom = event => {
-    /* use Obj.magic to change time, otherwise code in Wonka.subcribe breaks. */
+    /* use Obj.magic to change time, otherwise code in Wonka.subscribe breaks. */
     let event = event->Obj.magic;
     /* get the message value on event and post to ui */
     let message = event##value##data##onCreateMessage##message;
@@ -48,9 +48,9 @@ let make = () => {
           ReactTemplate.Types.observableLike(ReactTemplate.Types.observerLike('a))
           )`
            */
-    let observer = API.subscribe(graphqlOperation);
+    let source = API.subscribe(graphqlOperation);
     let subscription =
-      observer
+      source
       |> Wonka.fromObservable
       |> Wonka.subscribe((. event) => {
             let message = extractMessageFrom(event);
