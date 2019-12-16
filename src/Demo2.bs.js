@@ -64,7 +64,7 @@ function Demo2(Props) {
             query: graphqlOperation_query,
             variables: graphqlOperation_variables
           };
-          var observer = API$ReactTemplate.subscribe(graphqlOperation);
+          var source = API$ReactTemplate.subscribe(graphqlOperation);
           var subscription = Wonka.subscribe((function ($$event) {
                     var message = extractMessageFrom($$event);
                     Curry._1(setMessage, (function (param) {
@@ -72,7 +72,7 @@ function Demo2(Props) {
                           }));
                     console.log("subscription_event", message);
                     return /* () */0;
-                  }))(Wonka.fromObservable(observer));
+                  }))(Wonka.fromObservable(source));
           return (function (param) {
                     return Curry._1(subscription.unsubscribe, /* () */0);
                   });
