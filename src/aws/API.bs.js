@@ -43,6 +43,10 @@ function subscribe(graphqlOperation) {
   return Api.default.graphql(graphqlOperation);
 }
 
+function subscribeToObservable(graphqlOperation) {
+  return Wonka.fromObservable(Api.default.graphql(graphqlOperation));
+}
+
 function extractMessageFrom($$event) {
   return $$event.value.data.onCreateMessage.message;
 }
@@ -51,10 +55,16 @@ function subscribeToMessage(graphqlOperation) {
   return Wonka.map(extractMessageFrom)(Wonka.fromObservable(Api.default.graphql(graphqlOperation)));
 }
 
+function subscribeToMessage2(graphqlOperation) {
+  return Wonka.fromObservable(Api.default.graphql(graphqlOperation));
+}
+
 exports.configure = configure;
 exports.listener = listener;
 exports.mutate = mutate;
 exports.subscribe = subscribe;
+exports.subscribeToObservable = subscribeToObservable;
 exports.extractMessageFrom = extractMessageFrom;
 exports.subscribeToMessage = subscribeToMessage;
+exports.subscribeToMessage2 = subscribeToMessage2;
 /* Wonka Not a pure module */

@@ -3,7 +3,8 @@ type t;
 [@bs.send] external configureApi: (t, AwsExports.t) => unit = "configure";
 // let configure = config => configure(api, config);
 type pubsub;
-[@bs.module "@aws-amplify/pubsub/lib-esm/index"] external pubsub: pubsub = "default";
+[@bs.module "@aws-amplify/pubsub/lib-esm/index"]
+external pubsub: pubsub = "default";
 [@bs.send]
 external configurePubSub: (pubsub, AwsExports.t) => unit = "configure";
 let configure = config => {
@@ -48,9 +49,9 @@ external _subscribe:
   Wonka.observableT(Types.observableLike(Types.observerLike('value))) =
   "graphql";
 let subscribe = graphqlOperation => _subscribe(api, graphqlOperation);
+let subscribeToObservable = graphqlOperation => _subscribe(api, graphqlOperation)|> Wonka.fromObservable;
 
 let extractMessageFrom = event => {
-
   let event = event->Obj.magic;
   /* get the message value on event and post to ui */
   let message = event##value##data##onCreateMessage##message;
@@ -61,3 +62,7 @@ let subscribeToMessage = graphqlOperation =>
   _subscribe(api, graphqlOperation)
   |> Wonka.fromObservable
   |> Wonka.map((. event) => extractMessageFrom(event));
+
+let subscribeToMessage2 = graphqlOperation => {
+   _subscribe(api, graphqlOperation) |> Wonka.fromObservable;
+};
