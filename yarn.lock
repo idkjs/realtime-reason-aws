@@ -2400,6 +2400,12 @@ browserslist@^4.0.0, browserslist@^4.6.0, browserslist@^4.6.2, browserslist@^4.6
     electron-to-chromium "^1.3.322"
     node-releases "^1.1.42"
 
+bs-observable@idkjs/bs-observable.git:
+  version "0.1.0"
+  resolved "https://codeload.github.com/idkjs/bs-observable/tar.gz/3f5cd1e3fdfb9c66c597d1d3f60d18c43433d1a0"
+  dependencies:
+    zen-observable "^0.8.15"
+
 bs-platform@7.0.1:
   version "7.0.1"
   resolved "https://registry.yarnpkg.com/bs-platform/-/bs-platform-7.0.1.tgz#1d7b0ef6088b998dceee5db74a7cd8f01c20a3bd"
@@ -8671,6 +8677,12 @@ reason-react@0.7.0:
     react ">=16.8.1"
     react-dom ">=16.8.1"
 
+reason-zen-observable@idkjs/reason-zen-observable.git:
+  version "0.1.0"
+  resolved "git+ssh://git@github.com/idkjs/reason-zen-observable.git#ca205f07a6f288853bf83edc10af039243c92229"
+  dependencies:
+    zen-observable "^0.8.15"
+
 recursive-readdir@2.2.2:
   version "2.2.2"
   resolved "https://registry.yarnpkg.com/recursive-readdir/-/recursive-readdir-2.2.2.tgz#9946fb3274e1628de6e36b2f6714953b4845094f"
@@ -10786,7 +10798,7 @@ yargs@^13.3.0:
     y18n "^4.0.0"
     yargs-parser "^13.1.1"
 
-zen-observable@^0.8.6:
+zen-observable@^0.8.15, zen-observable@^0.8.6:
   version "0.8.15"
   resolved "https://registry.yarnpkg.com/zen-observable/-/zen-observable-0.8.15.tgz#96415c512d8e3ffd920afd3889604e30b9eaac15"
   integrity sha512-PQ2PC7R9rslx84ndNBZB/Dkv8V8fZEpk83RLgXtYd0fwUgEjseMn1Dgajh2x6S8QbZAFa9p2qVCEuYZNgve0dQ==

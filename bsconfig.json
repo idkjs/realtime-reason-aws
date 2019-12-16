@@ -14,7 +14,9 @@
   "namespace": true,
   "bs-dependencies": [
     "reason-react",
-    "wonka"
+    "wonka",
+    "reason-zen-observable",
+    "bs-observable"
   ],
   "reason": {
     "react-jsx": 3
